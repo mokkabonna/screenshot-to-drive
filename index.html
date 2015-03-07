@@ -1,0 +1,54 @@
+<!Doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Screenshot to drive</title>
+    <style>
+    body {
+        opacity: 0;
+        transition: opacity .3s;
+    }
+    body.loaded {
+        opacity: 1;
+    }
+    ol.dir-list .dir {
+        margin-bottom: 5px;
+        display: block;
+        width: 100%;
+        text-align: left;
+        background: #fff;
+        border: solid 1px #333;
+        font-size: 18px;
+        line-height: 30px;
+    }
+      ol.dir-list .dir img{
+        vertical-align: baseline;
+      }
+
+    </style>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+    <script data-main="app/config" src="bower_components/requirejs/require.js"></script>
+</head>
+
+<body data-bind="css: {loaded: auth.isLoggedIn}" class="container">
+    <div class="row">
+        <h1>Screenshot To Drive</h1>
+        <main>
+            <p data-bind="visible:auth.isLoggedIn">You are logged in</p>
+            <button type="button" data-bind="visible: !auth.isLoggedIn(), click: auth.forceLogin">Authorize
+            </button>
+
+            <ol class="row list-unstyled dir-list" data-bind="foreach: folders">
+                <li class="col-xs-6 col-sm-3">
+                    <button type="button" class="dir">
+                        <img data-bind="attr: {src: iconLink}">
+                        <span data-bind="text: title"></span>
+                    </button>
+                </li>
+            </ol>
+        </main>
+    </div>
+</body>
+
+</html>
