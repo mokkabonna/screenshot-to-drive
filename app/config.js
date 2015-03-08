@@ -7,10 +7,14 @@ require.config({
     promise: '../bower_components/bluebird/js/browser/bluebird',
     jquery: "../bower_components/jquery/jquery"
   },
+  'packages': [{
+    'name': 'lodash',
+    'location': '../bower_components/lodash-amd/modern'
+  }],
   map: {
     "*": {
-      knockout: "../bower_components/knockout.js/knockout",
-      ko: "../bower_components/knockout.js/knockout"
+      knockout: "../bower_components/knockout/dist/knockout",
+      ko: "../bower_components/knockout/dist/knockout"
     }
   }
 });
@@ -21,8 +25,8 @@ require.config({
 require.config({
   map: {
     "*": {
-      "knockout": "../bower_components/knockout.js/knockout-2.3.0.debug",
-      "ko": "../bower_components/knockout.js/knockout-2.3.0.debug"
+      "knockout": "../bower_components/knockout/dist/knockout.debug",
+      "ko": "../bower_components/knockout/dist/knockout.debug"
     }
   }
 });

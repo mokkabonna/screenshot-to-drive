@@ -4,6 +4,8 @@
     "requirejs": "~2.1.8",
     "requirejs-plugins": "~1.0.3",
     "bluebird": "~2.9.13",
-    "bootstrap": "~3.3.2"
+    "bootstrap": "~3.3.2",
+    "lodash-amd": "~3.4.0",
+    "knockout": "~3.3.0"
   }
 }
