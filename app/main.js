@@ -1,80 +1,107 @@
 define([
   'knockout',
   'drive/auth',
+  'drive/service',
   'gapi',
   'promise',
-  'lodash/collection/sortBy'
-], function(ko, auth, gapi, Promise, sortBy) {
+  'lodash/collection/sortBy',
+  './bindings',
+  'moment',
+], function(ko, auth, service, gapi, Promise, sortBy, foo, moment) {
   'use strict';
 
-  var folderMimeType = 'application/vnd.google-apps.folder';
   var allFolders = ko.observableArray();
+  var allImages = ko.observableArray();
+  var rootFolder = {
+    id: 'root',
+    iconLink: '',
+    title: 'Root folder'
+  };
+  var locale = window.navigator.userLanguage || window.navigator.language;
+  moment.locale(locale);
 
   var viewModel = {
     auth: auth,
+    initialized: ko.observable(false),
     handlePaste: handlePaste,
-    selectedFolder: ko.observable(),
+    selectedFolder: ko.observable(rootFolder),
+    allImages: allImages,
+    getParentFolders: getParentFolders,
+    uploadingImages: ko.computed(function() {
+      return allImages().filter(function(image) {
+        return !image.uploaded();
+      });
+    }),
     folders: ko.computed(function() {
       return sortBy(allFolders(), 'title');
     })
   };
 
-  window.d = viewModel;
-
-  /**
-   * Insert new file.
-   *
-   * @param {File} fileData File object to read data from.
-   * @param {Function} callback Function to call when the request is complete.
-   */
-  function insertFileInParentFolder(fileData, parentFolderId, callback) {
-    var boundary = '-------314159265358979323846';
-    var delimiter = "\r\n--" + boundary + "\r\n";
-    var close_delim = "\r\n--" + boundary + "--";
-
-    var reader = new FileReader();
-    reader.readAsBinaryString(fileData);
-    reader.onload = function(e) {
-      var contentType = fileData.type || 'application/octet-stream';
-      var metadata = {
-        title: 'Screenshot to drive',
-        parents: [{
-          id: parentFolderId
-        }],
-        mimeType: contentType
-      };
-
-      var base64Data = btoa(reader.result);
-      var multipartRequestBody =
-        delimiter +
-        'Content-Type: application/json\r\n\r\n' +
-        JSON.stringify(metadata) +
-        delimiter +
-        'Content-Type: ' + contentType + '\r\n' +
-        'Content-Transfer-Encoding: base64\r\n' +
-        '\r\n' +
-        base64Data +
-        close_delim;
-
-      var request = gapi.client.request({
-        'path': '/upload/drive/v2/files',
-        'method': 'POST',
-        'params': {
-          'uploadType': 'multipart'
-        },
-        'headers': {
-          'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
-        },
-        'body': multipartRequestBody
+  //Load root folders when logged in
+  auth.isLoggedIn.subscribe(function(loggedIn) {
+    if (loggedIn) {
+      service.loadAllRootFolders().then(function(folders) {
+        allFolders(folders);
+      }).catch(function(err) {
+        console.error('Could not load root folders');
       });
+    }
+  });
 
-      request.execute(callback);
-    };
+  //attempt login once at start
+  auth.login().catch(function() {
+    //do nothing
+  }).finally(startApplication);
+
+  return viewModel;
+  //Private functions
+
+  function startApplication() {
+    ko.applyBindings(viewModel, document.body);
+    viewModel.initialized(true);
   }
 
-  var matchType = /image.*/;
 
+  function Image(file, metaData) {
+    var self = this;
+    this.dataURL = ko.observable();
+    this.uploaded = ko.observable(false);
+    this.file = file;
+    this.metaData = ko.observable();
+    this.title = metaData.title;
+    this.newTitle = ko.observable();
+    this.isUpdatingTitle = ko.observable();
+
+    this.newTitle.subscribe(function(title) {
+      self.isUpdatingTitle(true);
+
+      gapi.client.drive.files.patch({
+        fileId: self.metaData().id,
+        resource: {
+          title: title
+        }
+      }).then(function() {
+        self.isUpdatingTitle(false);
+      }, function() {
+        self.isUpdatingTitle(false);
+      });
+    });
+  }
+
+  /**
+   * Get the parent folders for a file
+   * @return {string} The path
+   */
+  function getParentFolders(file) {
+    return 'Somefolder';
+  }
+
+
+  /**
+   * Handles the paste event
+   */
   function handlePaste(obj, event) {
+    var matchType = /image.*/;
     var clipboardData, found;
     found = false;
     clipboardData = event.clipboardData;
@@ -86,71 +113,35 @@ define([
       }
       if (type.match(matchType) || clipboardData.items[i].type.match(matchType)) {
         file = clipboardData.items[i].getAsFile();
+        var title = 'Screenshot - ' + moment().format('LLL');
 
-        insertFileInParentFolder(file, selectedFolderId, function() {
-          console.log('inserted', arguments);
+        var metadata = {
+          title: title,
+          parents: [{
+            id: selectedFolderId
+          }]
+        };
+
+        var image = new Image(file, metadata);
+
+        allImages.push(image);
+
+        service.insertFileInParentFolder(file, metadata).then(function(file) {
+          image.uploaded(true);
+          image.metaData(file);
         });
 
         reader = new FileReader();
         reader.onload = function(evt) {
-
-          var image = document.getElementById('pasted');
-          image.src = evt.target.result;
-
-          var imageData = {
-            dataURL: evt.target.result,
-            event: evt,
-            file: file,
-            name: file.name
-          };
+          image.dataURL(evt.target.result);
         };
         reader.readAsDataURL(file);
+
 
         return found = true;
       }
     });
     event.preventDefault();
   }
-
-
-
-  function loadRootFolders(pageToken) {
-    var options = {
-      maxResults: 100,
-      q: 'mimeType=\'' + folderMimeType + '\' and \'root\' in parents and trashed=false',
-    };
-
-    if (pageToken) {
-      options.pageToken = pageToken;
-    }
-
-    return gapi.client.drive.files.list(options);
-  }
-
-  function loadAllRootFoldersInto(allFolders) {
-    var folders = [];
-    return new Promise(function(resolve, reject) {
-      loadRootFolders().then(function handleResult(res) {
-        folders = folders.concat(res.result.items);
-        allFolders(allFolders().concat(res.result.items));
-        if (res.result.nextPageToken) {
-          return loadRootFolders(res.result.nextPageToken).then(handleResult);
-        } else {
-          resolve(folders);
-        }
-      }, reject);
-    });
-  }
-
-  function startApplication() {
-    loadAllRootFoldersInto(allFolders).catch(function(err) {
-      console.err(err);
-    });
-
-    ko.applyBindings(viewModel, document.body);
-  }
-
-  //attempt login once at start
-  auth.login().finally(startApplication);
 
 });

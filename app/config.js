@@ -5,7 +5,8 @@ require.config({
     bower_components: "../bower_components",
     async: '../bower_components/requirejs-plugins/src/async',
     promise: '../bower_components/bluebird/js/browser/bluebird',
-    jquery: "../bower_components/jquery/jquery"
+    jquery: '../bower_components/jquery/jquery',
+    moment: '../bower_components/moment/min/moment-with-locales'
   },
   'packages': [{
     'name': 'lodash',

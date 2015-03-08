@@ -1,15 +1,13 @@
 define([
   'gapi',
-  'ko',
+  'knockout',
   'promise'
 ], function(gapi, ko, Promise) {
   'use strict';
 
-  // var gapi = window.gapi;
-
   var CLIENT_ID = '426861507088-sctvq64k79cqta3lui9t9tq6d4o95ome.apps.googleusercontent.com';
   var SCOPES = [
-    'https://www.googleapis.com/auth/drive'
+    'https://www.googleapis.com/auth/drive.file'
   ];
 
   /**

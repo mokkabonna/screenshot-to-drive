@@ -4,8 +4,10 @@
 <head>
     <meta charset="utf-8">
     <title>Screenshot to drive</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
     <style>
     body {
+        font-size: 18px;
         opacity: 0;
         transition: opacity .3s;
     }
@@ -13,7 +15,7 @@
         opacity: 1;
     }
     ol.dir-list .dir {
-        cursor:pointer;
+        cursor: pointer;
         margin-bottom: 5px;
         padding: 5px;
         border-radius: 3px;
@@ -24,7 +26,6 @@
         background: #fff;
         border: solid 1px #ccc;
         color: rgb(32, 178, 170);
-        font-size: 18px;
         line-height: 30px;
     }
     ol.dir-list .dir.selected {
@@ -38,31 +39,117 @@
     ol.dir-list .dir input {
         display: none;
     }
+    ol.upload-list li {
+        max-height: 100px;
+        max-width: 100%;
+        padding: 0px 10px 10px 0px;
+        margin-bottom: 10px;
+    }
+    ol.upload-list li .img {
+        display: table-cell;
+        max-width: 50%;
+        width: auto;
+    }
+    ol.upload-list li .media-left {
+        padding:5px 10px 5px 5px;
+    }
+    ol.upload-list li .media-wrapper {
+        overflow: hidden;
+        max-height: 100px;
+        box-shadow: 0px 0px 3px #222;
+        border-radius: 3px;
+    }
+    ol.upload-list li .input {
+        display: table-row;
+    }
+    ol.upload-list li .metadata {
+        display: table-cell;
+        width: 100%;
+        padding-left: 20px;
+    }
+    ol.upload-list li img {
+        max-height: 100px;
+    }
+    #selected-folder .name {
+        color: rgb(32, 178, 170);
+    }
+    .glyphicon-spin {
+        -animation: spin .7s infinite linear;
+        -webkit-animation: spin2 .7s infinite linear;
+    }
+    @-webkit-keyframes spin2 {
+        from {
+            -webkit-transform: rotate(0deg);
+        }
+        to {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+    @keyframes spin {
+        from {
+            transform: scale(1) rotate(0deg);
+        }
+        to {
+            transform: scale(1) rotate(360deg);
+        }
+    }
     </style>
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+
     <script data-main="app/config" src="bower_components/requirejs/require.js"></script>
 </head>
 
-<body data-bind="css: {loaded: auth.isLoggedIn}" class="container">
+<body data-bind="css: {loaded: initialized}, event: {paste: $root.handlePaste}" class="container">
+
     <div class="row">
         <h1>Screenshot To Drive</h1>
+        <button type="button" data-bind="visible: !auth.isLoggedIn(), click: auth.forceLogin">
+            Authorize
+        </button>
         <main>
-            <p class="well">Select a folder and paste your image (Ctrl + V)</p>
-            <button type="button" data-bind="visible: !auth.isLoggedIn(), click: auth.forceLogin">Authorize
-            </button>
+            <div data-bind="if: auth.isLoggedIn">
 
-            Uploading
-            <img id="pasted">
 
-            <ol class="row list-unstyled dir-list" data-bind="foreach: folders, event: {paste: $root.handlePaste}">
-                <li class="col-xs-6 col-sm-4 col-md-3">
-                    <label class="dir" data-bind="css: { selected: $root.selectedFolder() === $data }">
-                        <input type="radio" name="folder" data-bind="checkedValue: $data, checked:$root.selectedFolder">
-                        <img data-bind="attr: {src: iconLink}">
-                        <span data-bind="text: title"></span>
-                    </label>
-                </li>
-            </ol>
+                <div id="selected-folder" class="well">
+                    <p>Upload screenshot to <span class="name" data-bind="text:selectedFolder().title"></span> by pasting (Ctrl-V) or select a subfolder below</p>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                            <span class="sr-only">100% Complete</span>
+                        </div>
+                    </div>
+                    <div data-bind="if: uploadingImages().length">
+                    </div>
+                    <ol data-bind="foreach:allImages" class="list-unstyled upload-list clearfix">
+                        <li class="clearfix">
+                            <div class="media">
+                                <div class="media-left">
+                                    <div class="media-wrapper">
+                                        <img class="media-object" data-bind="attr: {src: dataURL}">
+                                    </div>
+                                </div>
+                                <div class="media-body">
+                                    <div class="media-heading">
+                                        <span data-bind="text: 'Default title: ' + title"></span>
+                                    </div>
+                                    <div class="form-group" data-bind="css: {'has-feedback': isUpdatingTitle}">
+                                        <input type="text" class="form-control" data-bind="value: newTitle, attr: ">
+                                        <span data-bind="visible:isUpdatingTitle" class="glyphicon glyphicon-refresh glyphicon-spin form-control-feedback" aria-hidden="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+
+                <ol class="row list-unstyled dir-list" data-bind="foreach: folders">
+                    <li class="col-xs-6 col-sm-4 col-md-3">
+                        <label class="dir" data-bind="css: { selected: $root.selectedFolder() === $data }">
+                            <input type="radio" name="folder" data-bind="checkedValue: $data, checked:$root.selectedFolder">
+                            <img data-bind="attr: {src: iconLink}">
+                            <span data-bind="text: title"></span>
+                        </label>
+                    </li>
+                </ol>
+            </div>
         </main>
     </div>
 </body>

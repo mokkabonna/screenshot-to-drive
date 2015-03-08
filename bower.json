@@ -1,11 +1,13 @@
 {
   "name": "screenshot-to-drive",
   "dependencies": {
-    "requirejs": "~2.1.8",
+    "requirejs": "~2.1.16",
     "requirejs-plugins": "~1.0.3",
     "bluebird": "~2.9.13",
     "bootstrap": "~3.3.2",
     "lodash-amd": "~3.4.0",
-    "knockout": "~3.3.0"
+    "knockout": "~3.3.0",
+    "knockout.bindingHandlers.hidden": "~1.0.4",
+    "moment": "~2.9.0"
   }
 }
