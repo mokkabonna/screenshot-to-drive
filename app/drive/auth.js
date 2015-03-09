@@ -10,6 +10,28 @@ define([
     'https://www.googleapis.com/auth/drive.file'
   ];
 
+  var auth = {
+    rootFolderId: 'root',
+    about: ko.observable(),
+    login: function() {
+      return login(true);
+    },
+    forceLogin: function() {
+      return login(false);
+    },
+    isLoggedIn: ko.observable(false),
+  };
+
+  return auth;
+  //Private methods
+
+  function loadAbout() {
+    gapi.client.drive.about.get().then(function(about) {
+      auth.about(about.result);
+      auth.rootFolderId = about.result.rootFolderId;
+    });
+  }
+
   /**
    * Check if the current user has authorized the application.
    */
@@ -23,6 +45,7 @@ define([
         if (authResult.access_token) {
           // Access token has been successfully retrieved, requests can be sent to the API
           loadClient(function() {
+            loadAbout();
             auth.isLoggedIn(true);
             resolve(authResult);
           });
@@ -41,15 +64,4 @@ define([
     gapi.client.load('drive', 'v2', callback);
   }
 
-  var auth = {
-    login: function() {
-      return login(true);
-    },
-    forceLogin: function() {
-      return login(false);
-    },
-    isLoggedIn: ko.observable(false),
-  };
-
-  return auth;
 });

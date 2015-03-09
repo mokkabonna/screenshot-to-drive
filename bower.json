@@ -8,6 +8,8 @@
     "lodash-amd": "~3.4.0",
     "knockout": "~3.3.0",
     "knockout.bindingHandlers.hidden": "~1.0.4",
-    "moment": "~2.9.0"
+    "moment": "~2.9.0",
+    "mout": "~0.11.0",
+    "requirejs-text": "~2.0.14"
   }
 }

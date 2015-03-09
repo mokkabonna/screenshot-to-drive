@@ -4,6 +4,7 @@ require.config({
   paths: {
     bower_components: "../bower_components",
     async: '../bower_components/requirejs-plugins/src/async',
+    text: '../bower_components/requirejs-text/text',
     promise: '../bower_components/bluebird/js/browser/bluebird',
     jquery: '../bower_components/jquery/jquery',
     moment: '../bower_components/moment/min/moment-with-locales'
@@ -11,6 +12,9 @@ require.config({
   'packages': [{
     'name': 'lodash',
     'location': '../bower_components/lodash-amd/modern'
+  }, {
+    'name': 'mout',
+    'location': '../bower_components/mout/src'
   }],
   map: {
     "*": {

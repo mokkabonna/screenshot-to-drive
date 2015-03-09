@@ -1,4 +1,10 @@
-define(['gapi', 'promise', 'moment'], function(gapi, Promise, moment) {
+define([
+  'gapi',
+  'promise',
+  'ko',
+  'moment',
+  './auth',
+], function(gapi, Promise, ko, moment, auth) {
   'use strict';
 
   var folderMimeType = 'application/vnd.google-apps.folder';
@@ -19,7 +25,7 @@ define(['gapi', 'promise', 'moment'], function(gapi, Promise, moment) {
   function loadPageOfFolders(pageToken) {
     var options = {
       maxResults: 20,
-      q: 'mimeType=\'' + folderMimeType + '\' and \'root\' in parents and trashed=false',
+      q: 'mimeType=\'' + folderMimeType + '\' and \'' + auth.rootFolderId + '\' in parents and trashed=false',
     };
 
     if (pageToken) {

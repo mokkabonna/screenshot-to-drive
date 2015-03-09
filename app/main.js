@@ -7,8 +7,11 @@ define([
   'lodash/collection/sortBy',
   './bindings',
   'moment',
-], function(ko, auth, service, gapi, Promise, sortBy, foo, moment) {
+  './registerKnockoutComponents',
+], function(ko, auth, service, gapi, Promise, sortBy, foo, moment, registerKnockoutComponents) {
   'use strict';
+
+  registerKnockoutComponents();
 
   var allFolders = ko.observableArray();
   var allImages = ko.observableArray();
@@ -20,6 +23,10 @@ define([
   var locale = window.navigator.userLanguage || window.navigator.language;
   moment.locale(locale);
 
+  function isFullscreen() {
+    return document.fullscreenElement || document.webkitFullscreenElement || document.mozFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+  }
+
   var viewModel = {
     auth: auth,
     initialized: ko.observable(false),
@@ -27,6 +34,30 @@ define([
     selectedFolder: ko.observable(rootFolder),
     allImages: allImages,
     getParentFolders: getParentFolders,
+    goFullscreen: function(data, event) {
+      var i = event.srcElement;
+      if (!isFullscreen()) {
+        if (i.requestFullscreen) {
+          i.requestFullscreen();
+        } else if (i.webkitRequestFullscreen) {
+          i.webkitRequestFullscreen();
+        } else if (i.mozRequestFullScreen) {
+          i.mozRequestFullScreen();
+        } else if (i.msRequestFullscreen) {
+          i.msRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      }
+    },
     uploadingImages: ko.computed(function() {
       return allImages().filter(function(image) {
         return !image.uploaded();

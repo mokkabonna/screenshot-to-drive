@@ -9,10 +9,28 @@
     body {
         font-size: 18px;
         opacity: 0;
-        transition: opacity .3s;
+        transition: opacity .5s;
     }
     body.loaded {
         opacity: 1;
+    }
+    header {
+        padding: 10px;
+        background-color: darkorange;
+        margin-bottom: 10px;
+    }
+    header h1 {
+        margin: 0px;
+        padding: 0px;
+        line-height: 36px;
+        height: 36px;
+        float: left;
+    }
+    header .auth {
+        font-size: 14px;
+    }
+    header .auth img {
+        height: 36px;
     }
     ol.dir-list .dir {
         cursor: pointer;
@@ -51,7 +69,7 @@
         width: auto;
     }
     ol.upload-list li .media-left {
-        padding:5px 10px 5px 5px;
+        padding: 5px 10px 5px 5px;
     }
     ol.upload-list li .media-wrapper {
         overflow: hidden;
@@ -98,17 +116,21 @@
     <script data-main="app/config" src="bower_components/requirejs/require.js"></script>
 </head>
 
-<body data-bind="css: {loaded: initialized}, event: {paste: $root.handlePaste}" class="container">
-
-    <div class="row">
-        <h1>Screenshot To Drive</h1>
-        <button type="button" data-bind="visible: !auth.isLoggedIn(), click: auth.forceLogin">
-            Authorize
-        </button>
+<body data-bind="css: {loaded: initialized}, event: {paste: $root.handlePaste}">
+    <header>
+        <div class="container-fluid">
+            <h1>Screenshot To Drive</h1>
+            <div class="pull-right">
+                <auth-status></auth-status>
+            </div>
+            <button type="button" data-bind="visible: !auth.isLoggedIn(), click: auth.forceLogin">
+                Authorize
+            </button>
+        </div>
+    </header>
+    <div class="container-fluid">
         <main>
             <div data-bind="if: auth.isLoggedIn">
-
-
                 <div id="selected-folder" class="well">
                     <p>Upload screenshot to <span class="name" data-bind="text:selectedFolder().title"></span> by pasting (Ctrl-V) or select a subfolder below</p>
                     <div class="progress">
@@ -123,7 +145,7 @@
                             <div class="media">
                                 <div class="media-left">
                                     <div class="media-wrapper">
-                                        <img class="media-object" data-bind="attr: {src: dataURL}">
+                                        <img class="media-object" data-bind="attr: {src: dataURL}, click:$root.goFullscreen">
                                     </div>
                                 </div>
                                 <div class="media-body">
