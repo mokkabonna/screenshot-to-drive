@@ -11,7 +11,7 @@ define([
   ];
 
   var auth = {
-    rootFolderId: 'root',
+    rootFolderId: ko.observable('root'),
     about: ko.observable(),
     login: function() {
       return login(true);
@@ -28,7 +28,7 @@ define([
   function loadAbout() {
     gapi.client.drive.about.get().then(function(about) {
       auth.about(about.result);
-      auth.rootFolderId = about.result.rootFolderId;
+      auth.rootFolderId(about.result.rootFolderId);
     });
   }
 

@@ -10,6 +10,7 @@
     "knockout.bindingHandlers.hidden": "~1.0.4",
     "moment": "~2.9.0",
     "mout": "~0.11.0",
-    "requirejs-text": "~2.0.14"
+    "requirejs-text": "~2.0.14",
+    "hierarchy": "~0.1.0"
   }
 }

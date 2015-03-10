@@ -11,21 +11,18 @@ define([
 
   var exports = {
     loadAllRootFolders: loadAllRootFolders,
+    loadAllFolders: loadAllFolders,
+    loadAllFoldersUnderParent: loadAllFoldersUnderParent,
     insertFileInParentFolder: insertFileInParentFolder
   };
 
   return exports;
   //Private methods
 
-  /**
-   * Loads the first or specified page of folders in the root folder
-   * @param  {string} pageToken The token for the specific page
-   * @return {Promise<result>}           [description]
-   */
-  function loadPageOfFolders(pageToken) {
+  function loadAllFoldersPage(pageToken) {
     var options = {
-      maxResults: 20,
-      q: 'mimeType=\'' + folderMimeType + '\' and \'' + auth.rootFolderId + '\' in parents and trashed=false',
+      maxResults: 1000,
+      q: 'mimeType=\'' + folderMimeType + '\' and trashed=false',
     };
 
     if (pageToken) {
@@ -35,23 +32,59 @@ define([
     return gapi.client.drive.files.list(options);
   }
 
+  function loadAllFolders() {
+    var folders = [];
+    return new Promise(function(resolve, reject) {
+      loadAllFoldersPage().then(function handleResult(res) {
+        folders = folders.concat(res.result.items);
+        if (res.result.nextPageToken) {
+          return loadAllFoldersPage(res.result.nextPageToken).then(handleResult);
+        } else {
+          resolve(folders);
+        }
+      }, reject);
+    });
+  }
+
+  /**
+   * Loads the first or specified page of folders in the root folder
+   * @param  {string} pageToken The token for the specific page
+   * @return {Promise<result>}           [description]
+   */
+  function loadPageOfFolders(parentId, pageToken) {
+    var options = {
+      maxResults: 1000,
+      q: 'mimeType=\'' + folderMimeType + '\' and \'' + parentId + '\' in parents and trashed=false',
+    };
+
+    if (pageToken) {
+      options.pageToken = pageToken;
+    }
+
+    return gapi.client.drive.files.list(options);
+  }
+
+  function loadAllFoldersUnderParent(parentId) {
+    var folders = [];
+    return new Promise(function(resolve, reject) {
+      loadPageOfFolders(parentId).then(function handleResult(res) {
+        folders = folders.concat(res.result.items);
+        if (res.result.nextPageToken) {
+          return loadPageOfFolders(parentId, res.result.nextPageToken).then(handleResult);
+        } else {
+          resolve(folders);
+        }
+      }, reject);
+    });
+  }
+
   /**
    * Loads all folders in the root folder, notifies if possible
    * @param  {ObservableArray} allFolders [description]
    * @return {Promise<Array<drive#file>>}   A list of folders
    */
   function loadAllRootFolders() {
-    var folders = [];
-    return new Promise(function(resolve, reject) {
-      loadPageOfFolders().then(function handleResult(res) {
-        folders = folders.concat(res.result.items);
-        if (res.result.nextPageToken) {
-          return loadPageOfFolders(res.result.nextPageToken).then(handleResult);
-        } else {
-          resolve(folders);
-        }
-      }, reject);
-    });
+    return loadAllFoldersUnderParent(auth.rootFolderId());
   }
 
 

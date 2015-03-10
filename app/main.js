@@ -15,64 +15,68 @@ define([
 
   var allFolders = ko.observableArray();
   var allImages = ko.observableArray();
+  var locale = window.navigator.userLanguage || window.navigator.language;
+  var poppedState;
+
+
   var rootFolder = {
     id: 'root',
     iconLink: '',
-    title: 'Root folder'
+    title: 'Top Folder'
   };
-  var locale = window.navigator.userLanguage || window.navigator.language;
-  moment.locale(locale);
 
-  function isFullscreen() {
-    return document.fullscreenElement || document.webkitFullscreenElement || document.mozFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
-  }
+  var hierarcy = ko.observableArray([rootFolder]);
+
+  moment.locale(locale);
 
   var viewModel = {
     auth: auth,
+    hierarcy: hierarcy,
     initialized: ko.observable(false),
     handlePaste: handlePaste,
     selectedFolder: ko.observable(rootFolder),
     allImages: allImages,
     getParentFolders: getParentFolders,
-    goFullscreen: function(data, event) {
-      var i = event.srcElement;
-      if (!isFullscreen()) {
-        if (i.requestFullscreen) {
-          i.requestFullscreen();
-        } else if (i.webkitRequestFullscreen) {
-          i.webkitRequestFullscreen();
-        } else if (i.mozRequestFullScreen) {
-          i.mozRequestFullScreen();
-        } else if (i.msRequestFullscreen) {
-          i.msRequestFullscreen();
-        }
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen();
-        }
-      }
+    goFullscreen: goFullscreen,
+    revertToFolder: function(folder) {
+      hierarcy(hierarcy.slice(0, hierarcy.indexOf(folder)));
+      viewModel.selectedFolder(folder);
     },
-    uploadingImages: ko.computed(function() {
+    uploadingImages: ko.pureComputed(function() {
       return allImages().filter(function(image) {
         return !image.uploaded();
       });
     }),
-    folders: ko.computed(function() {
-      return sortBy(allFolders(), 'title');
+    subFolders: ko.pureComputed(function() {
+      var sorted = sortBy(allFolders(), 'title');
+      return sorted.filter(function(folder) {
+        return folder.parents.some(function(parent) {
+          var id = viewModel.selectedFolder().id;
+          if (id === 'root') {
+            id = auth.rootFolderId();
+          }
+          return parent.id === id;
+        });
+      });
     })
   };
+
+  viewModel.selectedFolder.subscribe(function(folder) {
+    hierarcy.push(folder);
+    // if (poppedState !== folder && folder.id !== 'root') {
+    //   history.pushState(folder, folder.title, folder.id);
+    // }
+  });
 
   //Load root folders when logged in
   auth.isLoggedIn.subscribe(function(loggedIn) {
     if (loggedIn) {
       service.loadAllRootFolders().then(function(folders) {
         allFolders(folders);
+        //then load all folders and replace
+        service.loadAllFolders().then(function(folders) {
+          allFolders(folders);
+        });
       }).catch(function(err) {
         console.error('Could not load root folders');
       });
@@ -88,10 +92,48 @@ define([
   //Private functions
 
   function startApplication() {
+
+    window.addEventListener("popstate", function(e) {
+      poppedState = e.state;
+      if (e.state === null) {
+        viewModel.selectedFolder(rootFolder);
+      } else {
+        viewModel.selectedFolder(e.state);
+      }
+    });
+
     ko.applyBindings(viewModel, document.body);
     viewModel.initialized(true);
   }
 
+  function isFullscreen() {
+    return document.fullscreenElement || document.webkitFullscreenElement || document.mozFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+  }
+
+  function goFullscreen(data, event) {
+    var i = event.srcElement;
+    if (!isFullscreen()) {
+      if (i.requestFullscreen) {
+        i.requestFullscreen();
+      } else if (i.webkitRequestFullscreen) {
+        i.webkitRequestFullscreen();
+      } else if (i.mozRequestFullScreen) {
+        i.mozRequestFullScreen();
+      } else if (i.msRequestFullscreen) {
+        i.msRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+    }
+  }
 
   function Image(file, metaData) {
     var self = this;
