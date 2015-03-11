@@ -8,6 +8,7 @@ define([
   'use strict';
 
   var folderMimeType = 'application/vnd.google-apps.folder';
+  var desiredFields = 'items(id,iconLink,parents,title)';
 
   var exports = {
     loadAllRootFolders: loadAllRootFolders,
@@ -23,6 +24,7 @@ define([
     var options = {
       maxResults: 1000,
       q: 'mimeType=\'' + folderMimeType + '\' and trashed=false',
+      fields: desiredFields,
     };
 
     if (pageToken) {
@@ -55,6 +57,7 @@ define([
     var options = {
       maxResults: 1000,
       q: 'mimeType=\'' + folderMimeType + '\' and \'' + parentId + '\' in parents and trashed=false',
+      fields: desiredFields
     };
 
     if (pageToken) {
