@@ -16,9 +16,6 @@ define([
   var allFolders = ko.observableArray();
   var allImages = ko.observableArray();
   var locale = window.navigator.userLanguage || window.navigator.language;
-  var poppedState;
-
-
   var rootFolder = {
     id: 'root',
     iconLink: '',
@@ -62,13 +59,6 @@ define([
     })
   };
 
-  viewModel.selectedFolder.subscribe(function(folder) {
-    hierarcy.push(folder);
-    // if (poppedState !== folder && folder.id !== 'root') {
-    //   history.pushState(folder, folder.title, folder.id);
-    // }
-  });
-
   //Load root folders when logged in
   auth.isLoggedIn.subscribe(function(loggedIn) {
     if (loggedIn) {
@@ -101,16 +91,6 @@ define([
   //Private functions
 
   function startApplication() {
-
-    window.addEventListener("popstate", function(e) {
-      poppedState = e.state;
-      if (e.state === null) {
-        viewModel.selectedFolder(rootFolder);
-      } else {
-        viewModel.selectedFolder(e.state);
-      }
-    });
-
     ko.applyBindings(viewModel, document.body);
     viewModel.initialized(true);
   }
