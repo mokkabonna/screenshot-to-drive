@@ -1,25 +1,16 @@
 'use strict';
 
 module.exports = function(grunt) {
+  require('load-grunt-tasks')(grunt); // Load grunt tasks automatically
 
   // Project configuration.
   grunt.initConfig({
     // Metadata.
     pkg: grunt.file.readJSON('package.json'),
-    banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-      '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-      '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
-      '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-      ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
-    // Task configuration.
     clean: {
       files: ['dist']
     },
     concat: {
-      options: {
-        banner: '<%= banner %>',
-        stripBanners: true
-      },
       dist: {
         src: ['components/requirejs/require.js', '<%= concat.dist.dest %>'],
         dest: 'dist/require.js'
@@ -35,6 +26,10 @@ module.exports = function(grunt) {
       },
     },
     jshint: {
+      options: {
+        jshintrc: '.jshintrc',
+        reporter: require('jshint-stylish')
+      },
       gruntfile: {
         options: {
           jshintrc: '.jshintrc'
@@ -43,7 +38,8 @@ module.exports = function(grunt) {
       },
       app: {
         options: {
-          jshintrc: 'app/.jshintrc'
+          jshintrc: 'app/.jshintrc',
+          reporter: require('jshint-stylish')
         },
         src: ['app/**/*.js']
       },
@@ -61,7 +57,7 @@ module.exports = function(grunt) {
       },
       src: {
         files: '<%= jshint.app.src %>',
-        tasks: ['jshint:src', 'qunit']
+        tasks: ['jshint:app', 'qunit']
       },
       test: {
         files: '<%= jshint.test.src %>',
@@ -113,16 +109,6 @@ module.exports = function(grunt) {
       }
     }
   });
-
-  // These plugins provide necessary tasks.
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-qunit');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-requirejs');
-  grunt.loadNpmTasks('grunt-contrib-connect');
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'qunit', 'clean', 'requirejs', 'concat', 'uglify']);

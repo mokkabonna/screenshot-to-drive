@@ -69,22 +69,53 @@
         padding: 5px 10px 5px 5px;
     }
     ol.upload-list li .img-container {
+        position: relative;
         text-align: center;
+    }
+    ol.upload-list li .img-container.is-uploading:fullscreen img {
+        opacity: 1;
+    }
+    ol.upload-list li .img-container.is-uploading:-webkit-full-screen img {
+        opacity: 1;
+    }
+    ol.upload-list li .img-container.is-uploading:-ms-full-screen img {
+        opacity: 1;
+    }
+    ol.upload-list li .img-container.is-uploading:-moz-full-screen img {
+        opacity: 1;
     }
     ol.upload-list li img {
         box-shadow: 0px 0px 3px #333;
         max-width: 100%;
         cursor: pointer;
     }
+    ol.upload-list .img-container.is-uploading img {
+        opacity: 0.4;
+    }
+    ol.upload-list .img-container img {
+        opacity: 1;
+        transition: opacity .5s;
+    }
+    ol.upload-list .img-container .glyphicon {
+        display: none;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 30px;
+    }
+    ol.upload-list .img-container.is-uploading .glyphicon {
+        display: block;
+    }
     #uploads .name {
         color: rgb(32, 178, 170);
     }
-    #uploads, .empty-sub-folder{
-        min-height:500px;
+    #uploads,
+    .empty-sub-folder {
+        min-height: 500px;
     }
     .glyphicon-spin {
-        -animation: spin .7s infinite linear;
-        -webkit-animation: spin2 .7s infinite linear;
+        -animation: spin 1s infinite linear;
+        -webkit-animation: spin2 1s infinite linear;
     }
     @-webkit-keyframes spin2 {
         from {
@@ -159,8 +190,9 @@
                                 <input type="text" class="form-control" placeholder="New title" data-bind="value: newTitle, attr: ">
                                 <span data-bind="visible:isUpdatingTitle" class="glyphicon glyphicon-refresh glyphicon-spin form-control-feedback" aria-hidden="true"></span>
                             </div>
-                            <div class="img-container">
-                                <img data-bind="attr: {src: dataURL}, click:$root.goFullscreen">
+                            <div class="img-container" data-bind="css: {'is-uploading' : isUploadingFile}, click:$root.goFullscreen">
+                                <img data-bind="attr: {src: dataURL}">
+                                <i class="glyphicon glyphicon-refresh glyphicon-spin"></i>
                             </div>
                         </li>
                     </ol>

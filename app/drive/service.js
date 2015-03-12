@@ -133,8 +133,10 @@ define([
           'body': multipartRequestBody
         });
 
-        request.execute(function(file) {
+        request.then(function(file) {
           resolve(file);
+        }, function (err) {
+          reject(err);
         });
       };
     });

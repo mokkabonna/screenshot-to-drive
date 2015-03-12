@@ -36,7 +36,6 @@ define([
     handlePaste: handlePaste,
     selectedFolder: ko.observable(rootFolder),
     allImages: allImages,
-    getParentFolders: getParentFolders,
     goFullscreen: goFullscreen,
     revertToFolder: function(folder) {
       hierarcy(hierarcy.slice(0, hierarcy.indexOf(folder)));
@@ -77,8 +76,8 @@ define([
         service.loadAllFolders().then(function(folders) {
           allFolders(folders);
         });
-      }).catch(function(err) {
-        console.error('Could not load root folders');
+      }).catch(function() {
+        window.console.error('Could not load root folders');
       });
     }
   });
@@ -139,11 +138,13 @@ define([
     var self = this;
     this.dataURL = ko.observable();
     this.uploaded = ko.observable(false);
+    this.uploadFailed = ko.observable(false);
     this.file = file;
     this.metaData = ko.observable();
     this.title = metaData.title;
     this.newTitle = ko.observable();
     this.isUpdatingTitle = ko.observable();
+    this.isUploadingFile = ko.observable(false);
 
     this.newTitle.subscribe(function(title) {
       self.isUpdatingTitle(true);
@@ -160,15 +161,6 @@ define([
       });
     });
   }
-
-  /**
-   * Get the parent folders for a file
-   * @return {string} The path
-   */
-  function getParentFolders(file) {
-    return 'Somefolder';
-  }
-
 
   /**
    * Handles the paste event
@@ -199,9 +191,16 @@ define([
 
         allImages.push(image);
 
+        image.isUploadingFile(true);
         service.insertFileInParentFolder(file, metadata).then(function(file) {
           image.uploaded(true);
           image.metaData(file);
+        }).catch(function(err) {
+          image.uploaded(false);
+          image.uploadFailed(true);
+          window.console.log(err);
+        }).finally(function() {
+          image.isUploadingFile(false);
         });
 
         reader = new FileReader();
