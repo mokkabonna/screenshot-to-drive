@@ -43,12 +43,6 @@ module.exports = function(grunt) {
         },
         src: ['app/**/*.js']
       },
-      test: {
-        options: {
-          jshintrc: 'test/.jshintrc'
-        },
-        src: ['test/**/*.js']
-      },
     },
     watch: {
       gruntfile: {
@@ -57,11 +51,11 @@ module.exports = function(grunt) {
       },
       src: {
         files: '<%= jshint.app.src %>',
-        tasks: ['jshint:app', 'qunit']
+        tasks: ['jshint:app']
       },
       test: {
         files: '<%= jshint.test.src %>',
-        tasks: ['jshint:test', 'qunit']
+        tasks: ['jshint:test']
       },
       livereload: {
         files: ['index.html', 'app/**/*'],
@@ -111,7 +105,7 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'qunit', 'clean', 'requirejs', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'clean', 'requirejs', 'concat', 'uglify']);
   grunt.registerTask('serve', ['connect:development', 'watch:livereload']);
   grunt.registerTask('serve:production', ['default', 'connect:production']);
 
