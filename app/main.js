@@ -33,6 +33,8 @@ define([
     auth: auth,
     hierarcy: hierarcy,
     initialized: ko.observable(false),
+    isLoadingFolders: ko.observable(false),
+    isLoadingSubFolders: ko.observable(false),
     handlePaste: handlePaste,
     selectedFolder: ko.observable(rootFolder),
     allImages: allImages,
@@ -70,14 +72,22 @@ define([
   //Load root folders when logged in
   auth.isLoggedIn.subscribe(function(loggedIn) {
     if (loggedIn) {
+      viewModel.isLoadingFolders(true);
       service.loadAllRootFolders().then(function(folders) {
         allFolders(folders);
         //then load all folders and replace
+        viewModel.isLoadingSubFolders(true);
         service.loadAllFolders().then(function(folders) {
           allFolders(folders);
+        }).catch(function(err) {
+          window.console.error('Could not load the rest of the folders', err);
+        }).finally(function() {
+          viewModel.isLoadingSubFolders(false);
         });
-      }).catch(function() {
-        window.console.error('Could not load root folders');
+      }).catch(function(err) {
+        window.console.error('Could not load root folders', err);
+      }).finally(function() {
+        viewModel.isLoadingFolders(false);
       });
     }
   });

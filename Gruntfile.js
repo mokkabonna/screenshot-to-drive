@@ -67,8 +67,12 @@ module.exports = function(grunt) {
     requirejs: {
       compile: {
         options: {
+          paths: {
+            requireLib: '../bower_components/requirejs/require'
+          },
           name: 'config',
           mainConfigFile: 'app/config.js',
+          include: ['requireLib'],
           out: '<%= concat.dist.dest %>',
           optimize: 'none'
         }
@@ -85,20 +89,7 @@ module.exports = function(grunt) {
       production: {
         options: {
           keepalive: true,
-          port: 8000,
-          middleware: function(connect, options) {
-            return [
-              // rewrite requirejs to the compiled version
-              function(req, res, next) {
-                if (req.url === '/components/requirejs/require.js') {
-                  req.url = '/dist/require.min.js';
-                }
-                next();
-              },
-              connect.static(options.base),
-
-            ];
-          }
+          port: 80
         }
       }
     }
@@ -107,6 +98,6 @@ module.exports = function(grunt) {
   // Default task.
   grunt.registerTask('default', ['jshint', 'clean', 'requirejs', 'concat', 'uglify']);
   grunt.registerTask('serve', ['connect:development', 'watch:livereload']);
-  grunt.registerTask('serve:production', ['default', 'connect:production']);
+  grunt.registerTask('serve:production', ['connect:production']);
 
 };

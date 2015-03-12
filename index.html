@@ -109,9 +109,18 @@
     #uploads .name {
         color: rgb(32, 178, 170);
     }
+    #folder-area .breadcrumb {
+        padding: 0px;
+        margin-bottom: 10px;
+    }
     #uploads,
-    .empty-sub-folder {
+    #folder-area {
         min-height: 500px;
+    }
+    .loading-folders {
+        position: absolute;
+        top: 10px;
+        right: 25px;
     }
     .glyphicon-spin {
         -animation: spin 1s infinite linear;
@@ -154,29 +163,36 @@
         <main>
             <div class="row">
                 <div class="col-xs-12">
-                    <ol class="breadcrumb" data-bind="foreach: hierarcy">
-                        <li>
-                            <a data-bind="text:title, click: $root.revertToFolder"></a>
-                        </li>
-                    </ol>
+
                 </div>
             </div>
             <div class="row" data-bind="if: auth.isLoggedIn">
                 <div class="col-xs-12 col-sm-5">
-                    <!-- ko if :subFolders().length-->
-                    <ol class="list-unstyled dir-list row" data-bind="foreach: subFolders">
-                        <li class="col-xs-12 col-lg-6">
-                            <label class="dir" data-bind="css: { selected: $root.selectedFolder() === $data }">
-                                <input type="radio" name="folder" data-bind="checkedValue: $data, checked:$root.selectedFolder">
-                                <img data-bind="attr: {src: iconLink}">
-                                <span data-bind="text: title"></span>
-                            </label>
-                        </li>
-                    </ol>
-                    <!-- /ko -->
-
-                    <div class="well empty-sub-folder" data-bind="hidden: subFolders().length">
-                        There are no subfolders in <span data-bind="text:selectedFolder().title"></span>
+                    <div id="folder-area" class="well">
+                        <ol class="breadcrumb" data-bind="foreach: hierarcy">
+                            <li>
+                                <a data-bind="text:title, click: $root.revertToFolder"></a>
+                            </li>
+                        </ol>
+                        <!-- ko if: subFolders().length-->
+                        <ol class="list-unstyled dir-list row" data-bind="foreach: subFolders">
+                            <li class="col-xs-12 col-lg-6">
+                                <label class="dir" data-bind="css: { selected: $root.selectedFolder() === $data }">
+                                    <input type="radio" name="folder" data-bind="checkedValue: $data, checked:$root.selectedFolder">
+                                    <img data-bind="attr: {src: iconLink}">
+                                    <span data-bind="text: title"></span>
+                                </label>
+                            </li>
+                        </ol>
+                        <!-- /ko -->
+                        <div class="empty-sub-folder" data-bind="hidden: subFolders().length">
+                            <div data-bind="visible: isLoadingFolders() || isLoadingSubFolders() && selectedFolder().id !== 'root'" class="loading-folders">
+                                <i class="glyphicon glyphicon-refresh glyphicon-spin"></i>
+                            </div>
+                            <div data-bind="hidden: isLoadingFolders">
+                                There are no subfolders in <span data-bind="text:selectedFolder().title"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div id="uploads" class="well col-xs-12 col-sm-7">
