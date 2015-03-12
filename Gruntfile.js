@@ -10,21 +10,6 @@ module.exports = function(grunt) {
     clean: {
       files: ['dist']
     },
-    concat: {
-      dist: {
-        src: ['components/requirejs/require.js', '<%= concat.dist.dest %>'],
-        dest: 'dist/require.js'
-      },
-    },
-    uglify: {
-      options: {
-        banner: '<%= banner %>'
-      },
-      dist: {
-        src: '<%= concat.dist.dest %>',
-        dest: 'dist/require.min.js'
-      },
-    },
     jshint: {
       options: {
         jshintrc: '.jshintrc',
@@ -43,6 +28,25 @@ module.exports = function(grunt) {
         },
         src: ['app/**/*.js']
       },
+    },
+    replace: {
+      release: {
+        files: {
+          'dist/index.html': ['index.html'],
+        },
+        options: {
+          patterns: [{
+            match: /<script[^]+require\.js\"><\/script>/m,
+            replacement: '<script async src="main.js"></script>',
+          }]
+        }
+      }
+    },
+    copy: {
+      release: {
+        src: 'bower_components/bootstrap/dist/css/bootstrap.min.css',
+        dest: 'dist/bower_components/bootstrap/dist/css/bootstrap.min.css',
+      }
     },
     watch: {
       gruntfile: {
@@ -73,8 +77,8 @@ module.exports = function(grunt) {
           name: 'config',
           mainConfigFile: 'app/config.js',
           include: ['requireLib'],
-          out: '<%= concat.dist.dest %>',
-          optimize: 'none'
+          out: 'dist/main.js',
+          optimize: 'uglify2'
         }
       }
     },
@@ -96,7 +100,7 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'clean', 'requirejs', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'clean', 'requirejs', 'replace:release', 'copy:release']);
   grunt.registerTask('serve', ['connect:development', 'watch:livereload']);
   grunt.registerTask('serve:production', ['connect:production']);
 
