@@ -44,8 +44,11 @@ module.exports = function(grunt) {
     },
     copy: {
       release: {
-        src: 'bower_components/bootstrap/dist/css/bootstrap.min.css',
-        dest: 'dist/bower_components/bootstrap/dist/css/bootstrap.min.css',
+        files: [{
+          expand: true,
+          src: ['bower_components/bootstrap/dist/**'],
+          dest: 'dist/bower_components/bootstrap/dist/'
+        }]
       }
     },
     watch: {
