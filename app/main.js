@@ -142,17 +142,31 @@ define([
 
     this.newTitle.subscribe(function(title) {
       self.isUpdatingTitle(true);
+      //if not uploaded yet, wait
+      if (self.uploaded()) {
+        var waitForUpload = self.uploaded.subscribe(function(isUploading) {
+          if (isUploading) {
+            updateTitle(self, title);
+            waitForUpload.dispose();
+          }
+        });
+      } else {
+        updateTitle(self, title);
+      }
 
-      gapi.client.drive.files.patch({
-        fileId: self.metaData().id,
-        resource: {
-          title: title
-        }
-      }).then(function() {
-        self.isUpdatingTitle(false);
-      }, function() {
-        self.isUpdatingTitle(false);
-      });
+    });
+  }
+
+  function updateTitle(image, title) {
+    gapi.client.drive.files.patch({
+      fileId: image.metaData().id,
+      resource: {
+        title: title
+      }
+    }).then(function() {
+      image.isUpdatingTitle(false);
+    }, function() {
+      image.isUpdatingTitle(false);
     });
   }
 
