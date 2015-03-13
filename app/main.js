@@ -135,23 +135,28 @@ define([
     this.uploadFailed = ko.observable(false);
     this.file = file;
     this.metaData = ko.observable();
-    this.title = metaData.title;
+    this.defaultTitle = metaData.title;
     this.newTitle = ko.observable();
     this.isUpdatingTitle = ko.observable();
     this.isUploadingFile = ko.observable(false);
+    this.newTitleUpdated = ko.observable(false);
+    this.titleUpdateFailed = ko.observable(false);
+
 
     this.newTitle.subscribe(function(title) {
       self.isUpdatingTitle(true);
+      self.newTitleUpdated(false);
+      self.titleUpdateFailed(false);
       //if not uploaded yet, wait
       if (self.uploaded()) {
+        updateTitle(self, title);
+      } else {
         var waitForUpload = self.uploaded.subscribe(function(isUploading) {
           if (isUploading) {
             updateTitle(self, title);
             waitForUpload.dispose();
           }
         });
-      } else {
-        updateTitle(self, title);
       }
 
     });
@@ -162,10 +167,14 @@ define([
       fileId: image.metaData().id,
       resource: {
         title: title
-      }
-    }).then(function() {
+      },
+      fields: 'id,iconLink,parents,title'
+    }).then(function(result) {
+      image.metaData(result.result);
+      image.newTitleUpdated(true);
       image.isUpdatingTitle(false);
     }, function() {
+      image.titleUpdateFailed(true);
       image.isUpdatingTitle(false);
     });
   }
@@ -201,8 +210,8 @@ define([
 
         image.isUploadingFile(true);
         service.insertFileInParentFolder(file, metadata).then(function(file) {
-          image.uploaded(true);
           image.metaData(file);
+          image.uploaded(true);
         }).catch(function(err) {
           image.uploaded(false);
           image.uploadFailed(true);

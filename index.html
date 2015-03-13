@@ -201,10 +201,12 @@
                     </div>
                     <ol data-bind="foreach:allImages().reverse()" class="list-unstyled upload-list">
                         <li>
-                            <span data-bind="text: 'Default title: ' + title"></span>
-                            <div class="form-group" data-bind="css: {'has-feedback': isUpdatingTitle}">
+                            <span data-bind="text: 'Default title: ' + defaultTitle"></span>
+                            <div class="form-group" data-bind="css: {'has-feedback': isUpdatingTitle() || newTitleUpdated() || titleUpdateFailed(), 'has-error': titleUpdateFailed, 'has-success' : newTitleUpdated }">
                                 <input type="text" class="form-control" placeholder="New title" data-bind="value: newTitle, attr: ">
                                 <span data-bind="visible:isUpdatingTitle" class="glyphicon glyphicon-refresh glyphicon-spin form-control-feedback" aria-hidden="true"></span>
+                                <span data-bind="visible:titleUpdateFailed" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+                                <span data-bind="visible:newTitleUpdated" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
                             </div>
                             <div class="img-container" data-bind="css: {'is-uploading' : isUploadingFile}, click:$root.goFullscreen">
                                 <img data-bind="attr: {src: dataURL}">
