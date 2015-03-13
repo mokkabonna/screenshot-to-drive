@@ -59,6 +59,10 @@ define([
     })
   };
 
+  viewModel.selectedFolder.subscribe(function(folder) {
+    hierarcy.push(folder);
+  });
+
   //Load root folders when logged in
   auth.isLoggedIn.subscribe(function(loggedIn) {
     if (loggedIn) {
