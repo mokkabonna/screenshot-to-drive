@@ -113,6 +113,36 @@
         padding: 0px;
         margin-bottom: 10px;
     }
+    img:-webkit-full-screen{
+      height: auto;
+      width: auto;
+      max-width: 100%;
+      max-height: 100%;
+    }
+    img:-moz-full-screen{
+      height: auto;
+      width: auto;
+      max-width: 100%;
+      max-height: 100%;
+    }
+    img:-ms-full-screen{
+      height: auto;
+      width: auto;
+      max-width: 100%;
+      max-height: 100%;
+    }
+    img:-ms-fullscreen{
+      height: auto;
+      width: auto;
+      max-width: 100%;
+      max-height: 100%;
+    }
+    img:fullscreen{
+      height: auto;
+      width: auto;
+      max-width: 100%;
+      max-height: 100%;
+    }
     #uploads,
     #folder-area {
         min-height: 500px;
@@ -195,25 +225,27 @@
                         </div>
                     </div>
                 </div>
-                <div id="uploads" class="well col-xs-12 col-sm-7">
-                    <p>Upload screenshot to <span class="name" data-bind="text:selectedFolder().title"></span> by pasting (Ctrl-V) or select a subfolder to the left</p>
-                    <div data-bind="if: uploadingImages().length">
+                <div class="col-xs-12 col-sm-7">
+                    <div id="uploads" class="well">
+                        <p>Upload screenshot to <span class="name" data-bind="text:selectedFolder().title"></span> by pasting (Ctrl-V) or select a subfolder to the left</p>
+                        <div data-bind="if: uploadingImages().length">
+                        </div>
+                        <ol data-bind="foreach:allImages().reverse()" class="list-unstyled upload-list">
+                            <li>
+                                <span data-bind="text: 'Default title: ' + defaultTitle"></span>
+                                <div class="form-group" data-bind="css: {'has-feedback': isUpdatingTitle() || newTitleUpdated() || titleUpdateFailed(), 'has-error': titleUpdateFailed, 'has-success' : newTitleUpdated }">
+                                    <input type="text" class="form-control" placeholder="New title" data-bind="value: newTitle, attr: ">
+                                    <span data-bind="visible:isUpdatingTitle" class="glyphicon glyphicon-refresh glyphicon-spin form-control-feedback" aria-hidden="true"></span>
+                                    <span data-bind="visible:titleUpdateFailed" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+                                    <span data-bind="visible:newTitleUpdated" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                </div>
+                                <div class="img-container" data-bind="css: {'is-uploading' : isUploadingFile}">
+                                    <img data-bind="attr: {src: dataURL}, click:$root.goFullscreen">
+                                    <i class="glyphicon glyphicon-refresh glyphicon-spin"></i>
+                                </div>
+                            </li>
+                        </ol>
                     </div>
-                    <ol data-bind="foreach:allImages().reverse()" class="list-unstyled upload-list">
-                        <li>
-                            <span data-bind="text: 'Default title: ' + defaultTitle"></span>
-                            <div class="form-group" data-bind="css: {'has-feedback': isUpdatingTitle() || newTitleUpdated() || titleUpdateFailed(), 'has-error': titleUpdateFailed, 'has-success' : newTitleUpdated }">
-                                <input type="text" class="form-control" placeholder="New title" data-bind="value: newTitle, attr: ">
-                                <span data-bind="visible:isUpdatingTitle" class="glyphicon glyphicon-refresh glyphicon-spin form-control-feedback" aria-hidden="true"></span>
-                                <span data-bind="visible:titleUpdateFailed" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-                                <span data-bind="visible:newTitleUpdated" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
-                            </div>
-                            <div class="img-container" data-bind="css: {'is-uploading' : isUploadingFile}, click:$root.goFullscreen">
-                                <img data-bind="attr: {src: dataURL}">
-                                <i class="glyphicon glyphicon-refresh glyphicon-spin"></i>
-                            </div>
-                        </li>
-                    </ol>
                 </div>
             </div>
         </main>
