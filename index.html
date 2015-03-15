@@ -40,20 +40,47 @@
     ol.dir-list .dir {
         cursor: pointer;
         margin-bottom: 5px;
-        padding: 5px 5px 2px 5px;
+        padding: 0px 0px 0px 0px;
         box-shadow: 0px 0px 1px #aaa;
         font-weight: normal;
-        font-size: 16px;
+        font-size: 13px;
         display: block;
         text-align: left;
         background: #fff;
         border: solid 1px #ccc;
-        color: rgb(32, 178, 170);
+        color: #222;
         line-height: 30px;
+        height: 40px;
+        position: relative;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    ol.dir-list .dir .name {
+        line-height: 40px;
+        position: absolute;
+        left: 36px;
+        right: 10px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    ol.dir-list .dir .icon {
+        width: 36px;
+        height: 100%;
+        text-align: center;
+        float: left;
     }
     ol.dir-list .dir:hover {
-      border-color: #aaa;
-      box-shadow: 1px 1px 4px #aaa;
+        border-color: #4285f4;
+        box-shadow: 1px 1px 4px #aaa;
+    }
+    ol.dir-list .dir:active {
+        background-color: #4285f4;
+        color: #fff;
     }
     ol.dir-list .dir.selected {
         border-color: #aaa;
@@ -61,6 +88,7 @@
         background-color: #eee;
     }
     ol.dir-list .dir img {
+        margin: 12px 10px;
         vertical-align: baseline;
     }
     ol.dir-list .dir input {
@@ -118,35 +146,38 @@
         padding: 0px;
         margin-bottom: 10px;
     }
-    img:-webkit-full-screen{
-      height: auto;
-      width: auto;
-      max-width: 100%;
-      max-height: 100%;
+    img:-webkit-full-screen {
+        height: auto;
+        width: auto;
+        max-width: 100%;
+        max-height: 100%;
     }
-    img:-moz-full-screen{
-      height: auto;
-      width: auto;
-      max-width: 100%;
-      max-height: 100%;
+    img:-moz-full-screen {
+        height: auto;
+        width: auto;
+        max-width: 100%;
+        max-height: 100%;
     }
-    img:-ms-full-screen{
-      height: auto;
-      width: auto;
-      max-width: 100%;
-      max-height: 100%;
+    img:-ms-full-screen {
+        height: auto;
+        width: auto;
+        max-width: 100%;
+        max-height: 100%;
     }
-    img:-ms-fullscreen{
-      height: auto;
-      width: auto;
-      max-width: 100%;
-      max-height: 100%;
+    img:-ms-fullscreen {
+        height: auto;
+        width: auto;
+        max-width: 100%;
+        max-height: 100%;
     }
-    img:fullscreen{
-      height: auto;
-      width: auto;
-      max-width: 100%;
-      max-height: 100%;
+    img:fullscreen {
+        height: auto;
+        width: auto;
+        max-width: 100%;
+        max-height: 100%;
+    }
+    .breadcrumb {
+        background: none;
     }
     #uploads,
     #folder-area {
@@ -203,7 +234,7 @@
             </div>
             <div class="row" data-bind="if: auth.isLoggedIn">
                 <div class="col-xs-12 col-sm-5">
-                    <div id="folder-area" class="well">
+                    <div id="folder-area">
                         <ol class="breadcrumb" data-bind="foreach: hierarcy">
                             <li>
                                 <a data-bind="text:title, click: $root.revertToFolder"></a>
@@ -211,11 +242,11 @@
                         </ol>
                         <!-- ko if: subFolders().length-->
                         <ol class="list-unstyled dir-list row" data-bind="foreach: subFolders">
-                            <li class="col-xs-12 col-lg-6">
-                                <label class="dir" data-bind="css: { selected: $root.selectedFolder() === $data }">
+                            <li class="col-xs-12 col-sm-6 col-lg-4">
+                                <label class="dir" data-bind="attr: {title: title}, css: { selected: $root.selectedFolder() === $data }">
                                     <input type="radio" name="folder" data-bind="checkedValue: $data, checked:$root.selectedFolder">
-                                    <img data-bind="attr: {src: iconLink}">
-                                    <span data-bind="text: title"></span>
+                                    <span class="icon"><img data-bind="attr: {src: iconLink}"></span>
+                                    <span class="name" data-bind="text: title"></span>
                                 </label>
                             </li>
                         </ol>
