@@ -217,6 +217,9 @@
         top: 10px;
         right: 25px;
     }
+    .jumbotron {
+        margin-top: 15px;
+    }
     .glyphicon-spin {
         -animation: spin 1s infinite linear;
         -webkit-animation: spin2 1s infinite linear;
@@ -243,18 +246,24 @@
 </head>
 
 <body data-bind="css: {loaded: initialized}, event: {paste: $root.handlePaste}">
-    <header>
+    <header data-bind="visible: auth.isLoggedIn">
         <div class="container-fluid">
             <h1>Screenshot To Drive</h1>
             <div class="pull-right">
                 <auth-status></auth-status>
             </div>
-            <button type="button" data-bind="visible: !auth.isLoggedIn(), click: auth.forceLogin">
-                Authorize
-            </button>
         </div>
     </header>
+
     <div class="container-fluid">
+        <div class="jumbotron" data-bind="hidden:auth.isLoggedIn">
+            <h1>Screenshot To Drive</h1>
+            <p>Paste screenshots to google drive by pasting from your clipboard.</p>
+            <p>To use this app you need to give it access to your google drive.</p>
+            <button type="button" data-bind="visible: !auth.isLoggedIn(), click: auth.forceLogin">
+                Give access
+            </button>
+        </div>
         <main>
             <div class="row">
                 <div class="col-xs-12">
