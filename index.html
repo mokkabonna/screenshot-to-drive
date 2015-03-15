@@ -37,6 +37,9 @@
     .breadcrumb li a {
         cursor: pointer;
     }
+    ol.dir-list {
+        margin-bottom: 20px;
+    }
     ol.dir-list .dir {
         cursor: pointer;
         margin-bottom: 5px;
@@ -91,6 +94,31 @@
         margin: 12px 10px;
         vertical-align: baseline;
     }
+    ol.dir-list li {
+        width: calc(100%/3);
+        float: left;
+        padding-right: 10px;
+    }
+    @media (min-width: 768px) {
+        ol.dir-list li {
+            width: calc(100%/4);
+        }
+    }
+    @media (min-width: 992px) {
+        ol.dir-list li {
+            width: calc(100%/6);
+        }
+    }
+    @media (min-width: 1200px) {
+        ol.dir-list li {
+            width: calc(100%/9);
+        }
+    }
+    @media (min-width: 1400px) {
+        ol.dir-list li {
+            width: calc(100%/12);
+        }
+    }
     ol.dir-list .dir input {
         display: none;
     }
@@ -120,6 +148,7 @@
     ol.upload-list li img {
         box-shadow: 0px 0px 3px #333;
         max-width: 100%;
+        max-height: 300px;
         cursor: pointer;
     }
     ol.upload-list .img-container.is-uploading img {
@@ -179,9 +208,14 @@
     .breadcrumb {
         background: none;
     }
-    #uploads,
-    #folder-area {
+    #uploads {
         min-height: 500px;
+        border-radius: 20px;
+        padding: 20px;
+        border: dashed 5px #ccc;
+    }
+    .empty-sub-folder {
+        margin: 10px 10px 20px 10px;
     }
     .loading-folders {
         position: absolute;
@@ -233,7 +267,7 @@
                 </div>
             </div>
             <div class="row" data-bind="if: auth.isLoggedIn">
-                <div class="col-xs-12 col-sm-5">
+                <div class="col-xs-12">
                     <div id="folder-area">
                         <ol class="breadcrumb" data-bind="foreach: hierarcy">
                             <li>
@@ -241,8 +275,8 @@
                             </li>
                         </ol>
                         <!-- ko if: subFolders().length-->
-                        <ol class="list-unstyled dir-list row" data-bind="foreach: subFolders">
-                            <li class="col-xs-12 col-sm-6 col-lg-4">
+                        <ol class="list-unstyled dir-list clearfix" data-bind="foreach: subFolders">
+                            <li>
                                 <label class="dir" data-bind="attr: {title: title}, css: { selected: $root.selectedFolder() === $data }">
                                     <input type="radio" name="folder" data-bind="checkedValue: $data, checked:$root.selectedFolder">
                                     <span class="icon"><img data-bind="attr: {src: iconLink}"></span>
@@ -260,9 +294,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-xs-12 col-sm-7">
-                    <div id="uploads" class="well">
+                    <div id="uploads">
                         <p>Upload screenshot to <span class="name" data-bind="text:selectedFolder().title"></span> by pasting (Ctrl-V) or select a subfolder to the left</p>
                         <div data-bind="if: uploadingImages().length">
                         </div>
