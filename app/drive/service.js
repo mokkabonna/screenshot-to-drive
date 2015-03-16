@@ -8,7 +8,7 @@ define([
   'use strict';
 
   var folderMimeType = 'application/vnd.google-apps.folder';
-  var desiredFields = 'items(id,iconLink,parents,title)';
+  var desiredFields = 'items(id,parents,title)';
 
   var exports = {
     loadAllRootFolders: loadAllRootFolders,

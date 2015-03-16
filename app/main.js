@@ -18,7 +18,6 @@ define([
   var locale = window.navigator.userLanguage || window.navigator.language;
   var rootFolder = {
     id: 'root',
-    iconLink: '',
     title: 'Top Folder'
   };
 
@@ -168,7 +167,7 @@ define([
       resource: {
         title: title
       },
-      fields: 'id,iconLink,parents,title'
+      fields: 'id,parents,title'
     }).then(function(result) {
       image.metaData(result.result);
       image.newTitleUpdated(true);
