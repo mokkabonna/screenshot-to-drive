@@ -2,3 +2,5 @@ node_modules/
 temp/
 dist/
 .divshot-cache/
+.c9/
+bower_components/

@@ -30,14 +30,14 @@ module.exports = function(grunt) {
       },
     },
     replace: {
-      release: {
-        files: {
-          'dist/index.html': ['index.html'],
-        },
-        options: {
-          patterns: [{
-            match: /<script[^]+require\.js\"><\/script>/m,
-            replacement: '<script async src="main.js"></script>',
+        release: {
+          files: {
+            'dist/index.html': ['index.html'],
+          },
+          options: {
+            patterns: [{
+              match: /<script[^]+require\.js\"><\/script>/m,
+              replacement: '<script async src="main.js"></script>',
           }]
         }
       }
@@ -88,9 +88,10 @@ module.exports = function(grunt) {
     connect: {
       development: {
         options: {
-          port: 80,
-          keepalive: false,
-          livereload: true
+          hostname: '0.0.0.0',
+          port: process.env.PORT || 9001,
+          keepalive: true,
+          livereload: false
         }
       },
       production: {
@@ -101,6 +102,7 @@ module.exports = function(grunt) {
       }
     }
   });
+  
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'clean', 'requirejs', 'replace:release', 'copy:release']);
