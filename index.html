@@ -210,6 +210,7 @@
     }
     .breadcrumb {
         background: none;
+        line-height: 34px;
     }
     #uploads {
         min-height: 500px;
@@ -287,13 +288,28 @@
             <div class="row" data-bind="if: auth.isLoggedIn">
                 <div class="col-xs-12">
                     <div id="folder-area">
-                        <ol class="breadcrumb" data-bind="foreach: hierarcy">
-                            <li>
-                                <a data-bind="text:title, click: $root.revertToFolder"></a>
-                            </li>
-                        </ol>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-8 col-md-9 col-lg-10">
+                                <ol class="breadcrumb pull-left" data-bind="foreach: hierarcy">
+                                    <li>
+                                        <a data-bind="text:title, click: $root.revertToFolder"></a>
+                                    </li>
+                                </ol>
+                            </div>
+                            <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input class="form-control" placeholder="New folder title" data-bind="value:newFolderName">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" type="button" data-bind="click: addNewFolder">Add</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <!-- ko if: subFolders().length-->
-                        <ol class="list-unstyled dir-list clearfix" data-bind="foreach: subFolders">
+                        <ol class="list-unstyled dir-list clearfix">
+                            <!-- ko foreach: subFolders -->
                             <li>
                                 <label class="dir" data-bind="attr: {title: title}, css: { selected: $root.selectedFolder() === $data }">
                                     <input type="radio" name="folder" data-bind="checkedValue: $data, checked:$root.selectedFolder">
@@ -301,6 +317,7 @@
                                     <span class="name" data-bind="text: title"></span>
                                 </label>
                             </li>
+                            <!-- /ko -->
                         </ol>
                         <!-- /ko -->
                         <div class="empty-sub-folder" data-bind="hidden: subFolders().length">

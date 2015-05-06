@@ -39,6 +39,13 @@ define([
       hierarcy(hierarcy.slice(0, hierarcy.indexOf(folder)));
       viewModel.selectedFolder(folder);
     },
+    newFolderName: ko.observable(),
+    addNewFolder: function functionName() {
+      service.createNewFolder(viewModel.newFolderName(), viewModel.selectedFolder().id).then(function (folder) {
+        allFolders.push(folder);
+        viewModel.newFolderName(undefined);
+      });
+    },
     uploadingImages: ko.pureComputed(function() {
       return allImages().filter(function(image) {
         return !image.uploaded();

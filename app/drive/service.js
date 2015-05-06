@@ -14,7 +14,8 @@ define([
     loadAllRootFolders: loadAllRootFolders,
     loadAllFolders: loadAllFolders,
     loadAllFoldersUnderParent: loadAllFoldersUnderParent,
-    insertFileInParentFolder: insertFileInParentFolder
+    insertFileInParentFolder: insertFileInParentFolder,
+    createNewFolder: createNewFolder
   };
 
   return exports;
@@ -90,6 +91,24 @@ define([
     return loadAllFoldersUnderParent(auth.rootFolderId());
   }
 
+  /**
+   * Creates a new Folder in the parent folder
+   */
+  function createNewFolder(title, parentId) {
+    return new Promise(function(resolve, reject) {
+      gapi.client.drive.files.insert({
+        title: title,
+        parents: [{
+          id: parentId
+        }],
+        mimeType: folderMimeType
+      }).then(function(response) {
+        resolve(response.result);
+      }, function(err){
+        reject(err);
+      });
+    });
+  }
 
   /**
    * Insert new file.
