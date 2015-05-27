@@ -9,6 +9,11 @@ require.config({
     jquery: '../bower_components/jquery/jquery',
     moment: '../bower_components/moment/min/moment-with-locales'
   },
+  shim: {
+    ga: {
+      exports: 'ga'
+    }
+  },
   'packages': [{
     'name': 'lodash',
     'location': '../bower_components/lodash-amd/modern'

@@ -1,8 +1,9 @@
 define([
   'gapi',
   'knockout',
-  'promise'
-], function(gapi, ko, Promise) {
+  'promise',
+  'ga',
+], function(gapi, ko, Promise, ga) {
   'use strict';
 
   var CLIENT_ID = '426861507088-sctvq64k79cqta3lui9t9tq6d4o95ome.apps.googleusercontent.com';
@@ -26,7 +27,9 @@ define([
   //Private methods
 
   function loadAbout() {
+    ga('send', 'event', 'load-about', 'start');
     gapi.client.drive.about.get().then(function(about) {
+      ga('send', 'event', 'load-about', 'completed');
       auth.about(about.result);
       auth.rootFolderId(about.result.rootFolderId);
     });
@@ -37,6 +40,7 @@ define([
    */
   function login(immediate) {
     return new Promise(function(resolve, reject) {
+      ga('send', 'event', 'login', 'start');
       gapi.auth.authorize({
         client_id: CLIENT_ID,
         scope: SCOPES,
@@ -47,9 +51,11 @@ define([
           loadClient(function() {
             loadAbout();
             auth.isLoggedIn(true);
+            ga('send', 'event', 'login', 'completed');
             resolve(authResult);
           });
         } else {
+          ga('send', 'event', 'login', 'failed');
           reject();
         }
       });

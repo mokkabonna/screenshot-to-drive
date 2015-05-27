@@ -4,7 +4,8 @@ define([
   'ko',
   'moment',
   './auth',
-], function(gapi, Promise, ko, moment, auth) {
+  'ga',
+], function(gapi, Promise, ko, moment, auth, ga) {
   'use strict';
 
   var folderMimeType = 'application/vnd.google-apps.folder';
@@ -38,14 +39,19 @@ define([
   function loadAllFolders() {
     var folders = [];
     return new Promise(function(resolve, reject) {
+      ga('send', 'event', 'load-folders', 'start');
       loadAllFoldersPage().then(function handleResult(res) {
         folders = folders.concat(res.result.items);
         if (res.result.nextPageToken) {
           return loadAllFoldersPage(res.result.nextPageToken).then(handleResult);
         } else {
+          ga('send', 'event', 'load-folders', 'completed');
           resolve(folders);
         }
-      }, reject);
+      }, function(err) {
+        ga('send', 'event', 'load-folders', 'failed');
+        reject(err);
+      });
     });
   }
 
@@ -96,6 +102,7 @@ define([
    */
   function createNewFolder(title, parentId) {
     return new Promise(function(resolve, reject) {
+      ga('send', 'event', 'create-folder', 'start');
       gapi.client.drive.files.insert({
         title: title,
         parents: [{
@@ -103,8 +110,10 @@ define([
         }],
         mimeType: folderMimeType
       }).then(function(response) {
+        ga('send', 'event', 'create-folder', 'completed');
         resolve(response.result);
-      }, function(err){
+      }, function(err) {
+        ga('send', 'event', 'create-folder', 'failed');
         reject(err);
       });
     });
@@ -118,6 +127,7 @@ define([
    */
   function insertFileInParentFolder(fileData, metadata) {
     return new Promise(function(resolve, reject) {
+      ga('send', 'event', 'upload-file', 'start');
       var boundary = '-------314159265358979323846';
       var delimiter = "\r\n--" + boundary + "\r\n";
       var close_delim = "\r\n--" + boundary + "--";
@@ -140,6 +150,7 @@ define([
           base64Data +
           close_delim;
 
+        ga('send', 'event', 'upload-file', 'posting');
         var request = gapi.client.request({
           'path': '/upload/drive/v2/files',
           'method': 'POST',
@@ -153,8 +164,10 @@ define([
         });
 
         request.then(function(response) {
+          ga('send', 'event', 'upload-file', 'completed');
           resolve(response.result);
-        }, function (err) {
+        }, function(err) {
+          ga('send', 'event', 'upload-file', 'failed');
           reject(err);
         });
       };
