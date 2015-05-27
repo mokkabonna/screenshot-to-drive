@@ -8,8 +8,12 @@ define([
   './bindings',
   'moment',
   './registerKnockoutComponents',
-], function(ko, auth, service, gapi, Promise, sortBy, foo, moment, registerKnockoutComponents) {
+  'ga',
+], function(ko, auth, service, gapi, Promise, sortBy, foo, moment, registerKnockoutComponents, ga) {
   'use strict';
+
+  ga('create', 'UA-62528044-1', 'auto');
+  ga('send', 'pageview');
 
   registerKnockoutComponents();
 
@@ -41,7 +45,7 @@ define([
     },
     newFolderName: ko.observable(),
     addNewFolder: function functionName() {
-      service.createNewFolder(viewModel.newFolderName(), viewModel.selectedFolder().id).then(function (folder) {
+      service.createNewFolder(viewModel.newFolderName(), viewModel.selectedFolder().id).then(function(folder) {
         allFolders.push(folder);
         viewModel.newFolderName(undefined);
       });

@@ -7,7 +7,8 @@ require.config({
     text: '../bower_components/requirejs-text/text',
     promise: '../bower_components/bluebird/js/browser/bluebird',
     jquery: '../bower_components/jquery/jquery',
-    moment: '../bower_components/moment/min/moment-with-locales'
+    moment: '../bower_components/moment/min/moment-with-locales',
+    ga: '../bower_components/google-analytics/index'
   },
   shim: {
     ga: {

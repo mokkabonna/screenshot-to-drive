@@ -11,6 +11,7 @@
     "moment": "~2.9.0",
     "mout": "~0.11.0",
     "requirejs-text": "~2.0.14",
-    "hierarchy": "~0.1.0"
+    "hierarchy": "~0.1.0",
+    "google-analytics": "http://www.google-analytics.com/analytics.js"
   }
 }
