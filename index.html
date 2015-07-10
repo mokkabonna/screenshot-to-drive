@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Screenshot to drive</title>
+    <title>Screenshot to google drive</title>
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
     <style>
@@ -263,7 +263,7 @@
 <body data-bind="css: {loaded: initialized}, event: {paste: $root.handlePaste}">
     <header data-bind="visible: auth.isLoggedIn">
         <div class="container-fluid">
-            <h1>Screenshot To Drive</h1>
+            <h1>Screenshot To Google Drive</h1>
             <div class="pull-right">
                 <auth-status></auth-status>
             </div>
@@ -272,7 +272,7 @@
 
     <div class="container-fluid">
         <div class="jumbotron" data-bind="hidden:auth.isLoggedIn">
-            <h1>Screenshot To Drive</h1>
+            <h1>Screenshot To Google Drive</h1>
             <p>Paste screenshots to google drive by pasting from your clipboard.</p>
             <p>To use this app you need to give it access to your google drive.</p>
             <button class="btn btn-lg btn-primary" type="button" data-bind="visible: !auth.isLoggedIn(), click: auth.forceLogin">
