@@ -1,0 +1,9 @@
+{
+  "firebase": "screenshot-to-google-drive",
+  "public": "dist",
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**"
+  ]
+}
